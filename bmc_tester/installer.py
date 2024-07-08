@@ -13,20 +13,65 @@ def get_version():
         old = file.readlines(0)[0]
     except Exception:
         old = "not installed"
-
     path = os.getcwd() + '/prog/version'
     file = open(path, "r")
     new = file.readlines(0)[0]
-
     return old, new
 
+def TryComand(comand):
+    subprocess.run(comand, shell = True)
+    logger.debug(comand)
     
+
+def installing():
+    logger.debug('create folder for script in /opt')
+    subprocess.call('sudo rm -r /opt/bmc_tester', shell = True)
+    TryComand('sudo mkdir /opt/bmc_tester')
+   
+    logger.debug('copy scripts files')
+    TryComand('sudo cp -r ' + os.getcwd() + '/prog/* /opt/bmc_tester')
+    TryComand('sudo chmod +x /opt/bmc_tester/scripts/*')
+    
+    logger.debug('create alias in bashrc for root')
+    subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
+    subprocess.call("sudo echo \"alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'\" >>/root/.bashrc", shell = True)
+
+    logger.debug('create alias for user')
+    homefolder = os.path.join('/home/', os.environ['USER'])
+    bashrc = os.path.abspath('%s/.bashrc' % homefolder)
+    print('BBBBBAAAASHH=',bashrc)
+    alias = "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'"
+    with open(bashrc, 'r') as f:
+        lines = f.readlines()
+        if alias not in lines:
+            out = open(bashrc, 'a')
+            out.write(alias)
+
+    logger.debug('check installing nmap')
+    packet_manager = """Select a package manager. Enter:
+                        1 for apt
+                        2 for rpm
+                        3 for yum"""
+    print(packet_manager)
+    pm = int(input())
+    try:
+        if pm == 1:
+            apt()
+        elif pm == 2:
+            rpm()
+        elif pm == 3:
+            yum()
+        else:
+            print('Everything is broken')
+    except Exception:
+        print('Failed to install nmap. install it yourself: https://nmap.org/')
+     
 
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog="BMC tester")
 
     parser.add_argument("-i", "--install", help="install scripts and components", action="store_true")
-    parser.add_argument("-rm", "--remove", help="remove script and components", action="store_true")
+    parser.add_argument("-up", "--update", help="remove script and components", action="store_true")
 
     old, new = get_version()    
     parser.add_argument("-nv", "--new_version", action="version", version="%(prog)s "+new)
@@ -49,6 +94,19 @@ def setup_logging(options):
             "%(levelname)s[%(name)s] %(message)s"))
         root.addHandler(ch)
 
+def apt():
+    subprocess.run("sudo apt-get update", shell = True)
+    subprocess.run("sudo apt-get install nmap", shell = True)
+
+def dnf():
+    subprocess.run("sudo dnf update", shell = True)
+    subprocess.run("sudo dnf install nmap -y", shell = True)
+
+def yum():
+    subprocess.run("sudo yum update", shell = True)
+    subprocess.run("sudo yum install nmap", shell = True)
+
+
 if __name__ == "__main__":
 
     options = parse_args()
@@ -56,31 +114,23 @@ if __name__ == "__main__":
 
     try:
         logger.debug("start bmc tester")
-        if options.remove:
-            logger.debug('delete scripts files from /opt')
-            try:
-                subprocess.call('rm -r /opt/bmc_tester', shell = False)
-            except FileNotFoundError as e:
-                logger.exception("%s", e)
-                sys.exit(1)
-            subprocess.call('unalias bmctester', shell = True)
-            subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
-
-            print("All files and aliases have been deleted")
-        elif options.install:
-            logger.debug('create folder for script in /opt')
-            subprocess.call('mkdir /opt/bmc_tester', shell = True)
-            logger.debug('copy scripts files')
-            subprocess.call('cp ' + os.getcwd() + '/prog/* /opt/bmc_tester', shell = True)
-            logger.debug('create alias')
-            subprocess.call('chmod +x /opt/bmc_tester', shell = True)
-            subprocess.call("alias bmctester='sudo ./opt/bmc_tester/bmctester.py'", shell = True)
-            subprocess.call("echo \"alias bmctester='sudo ./opt/bmc_tester/bmctester.py'\" >>/root/.bashrc", shell = True)
-
-
-
+        if options.install:
+            logger.debug("start installing")
+            installing()
         elif options.update:
-            print("update")
+            logger.debug("check version")
+            old, new = get_version()
+            if old =="not installed":
+                 installing()
+            elif float(new) > float(old):
+                logger.debug("start updating")
+                logger.debug('delete old scripts files from /opt')
+                TryComand('sudo rm -r /opt/bmc_tester/scripts')
+                TryComand('sudo cp ' + os.getcwd() + '/prog/* /opt/bmc_tester/scripts')
+                TryComand('sudo chmod +x /opt/bmc_tester')
+                logger.debug("finish updating")
+            logger.debug("last version installed")
+
 
     except Exception as e:
         logger.exception("%s", e)

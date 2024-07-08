@@ -7,6 +7,15 @@ import os
 import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 
+def TryComand(comand, TF):
+    try:
+        subprocess.run(comand, shell = TF)
+        print(comand)
+    except subprocess.CalledProcessError as e:
+        print(comand)
+        print(e.output)
+        sys.exit(1)
+
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog="BMC tester")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.1")
@@ -14,7 +23,6 @@ def parse_args(args=sys.argv[1:]):
     base = parser.add_mutually_exclusive_group()
     base.add_argument("-r", "--run", help="start test", action="store_true")
     base.add_argument("-i", "--install", help="install scripts and components", action="store_true")
-    base.add_argument("-u", "--update", help="update script and components", action="store_true")
     base.add_argument("-rm", "--remove", help="remove script and components", action="store_true")
     
     g = parser.add_mutually_exclusive_group()
@@ -42,14 +50,17 @@ if __name__ == "__main__":
     try:
         logger.debug("start bmc tester")
         if options.remove:
-            logger.debug('delete scripts files from /opt')
-            subprocess.call('rm -r /opt/bmc_tester', shell = True)
-        elif options.install:
-            logger.debug('create folder for script in /opt')
-            subprocess.call('mkdir /opt/bmc_tester', shell = True)
-            logger.debug('copy scripts files')
+            if options.debug:
+                TryComand('sudo python /opt/bmc_tester/scripts/remove.py -d', True)
+            else:
+                TryComand('sudo python /opt/bmc_tester/scripts/remove.py -s', True)
         elif options.update:
-            print("update")
+            if options.debug:
+                TryComand('sudo python /opt/bmc_tester/scripts/update.py -d', True)
+            else:
+                TryComand('sudo python /opt/bmc_tester/scripts/update.py -s', True)
+
+        
 
     except Exception as e:
         logger.exception("%s", e)
