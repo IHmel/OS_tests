@@ -35,16 +35,23 @@ def TryComand(comand, TF):
         sys.exit(1)
 
 if __name__ == "__main__":
-    logger.debug('start deleting')
+    options = parse_args()
+    setup_logging(options)
 
-    logger.debug('delete alias in bashrc for root')
-    subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
+    try:
+        
+        logger.debug('start deleting')
+        logger.debug('delete alias in bashrc for root')
+        subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
+        logger.debug('delete alias in bashrc for user')
+        homefolder = os.path.join('/home/', os.environ['USER'])
+        bashrc = os.path.abspath('%s/.bashrc' % homefolder)
+        print('BBBBBAAAASHH=',bashrc)
+        TryComand('sudo sed -i "/bmctester/d" ' + bashrc, True)
+        logger.debug('delete all scripts files from /opt')
+        TryComand('sudo rm -r /opt/bmc_tester', True)
 
-    logger.debug('delete alias in bashrc for user')
-    homefolder = os.path.join('/home/', os.environ['USER'])
-    bashrc = os.path.abspath('%s/.bashrc' % homefolder)
-    print('BBBBBAAAASHH=',bashrc)
-    TryComand('sudo sed -i "/bmctester/d" ' + bashrc, True)
-
-    logger.debug('delete all scripts files from /opt')
-    TryComand('sudo rm -r /opt/bmc_tester', True)
+    except Exception as e:
+        logger.exception("%s", e)
+        sys.exit(1)
+    sys.exit(0)

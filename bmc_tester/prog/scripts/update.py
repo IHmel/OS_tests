@@ -7,6 +7,17 @@ import os
 import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 
+def get_version(path_bmc_tester):
+    try:
+        file = open("/opt/bmc_tester/version", "r")
+        old = file.readlines(0)[0]
+    except Exception:
+        old = "not installed"
+    path = path_bmc_tester+ '/prog/version'
+    file = open(path, "r")
+    new = file.readlines(0)[0]
+    return old, new
+
 def TryComand(comand, TF):
     try:
         subprocess.run(comand, shell = TF)
@@ -20,11 +31,6 @@ def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog="BMC tester")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.1")
 
-    base = parser.add_mutually_exclusive_group()
-    base.add_argument("-r", "--run", help="start test", action="store_true")
-    base.add_argument("-i", "--install", help="install scripts and components", action="store_true")
-    base.add_argument("-rm", "--remove", help="remove script and components", action="store_true")
-    
     g = parser.add_mutually_exclusive_group()
     g.add_argument("-d", "--debug", action="store_true", default=False, help="enable debugging")
     g.add_argument("-s", "--silent", action="store_true", default=False, help="don't log to console")
@@ -41,3 +47,19 @@ def setup_logging(options):
         ch.setFormatter(logging.Formatter(
             "%(levelname)s[%(name)s] %(message)s"))
         root.addHandler(ch)
+
+
+if __name__ == "__main__":
+
+    options = parse_args()
+    setup_logging(options)
+    try:
+        logger.debug("check new version")
+        print("""Specify the path to the BMC tester folder with the update. For example: /home/User/Download/bmc_tester """)
+        path_to_update=str(input())
+        old, new = get_version(path_to_update)
+
+    except Exception as e:
+        logger.exception("%s", e)
+        sys.exit(1)
+    sys.exit(0)

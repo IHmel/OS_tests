@@ -7,13 +7,13 @@ import os
 import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 
-def get_version():
+def get_version(path_bmc_tester):
     try:
         file = open("/opt/bmc_tester/version", "r")
         old = file.readlines(0)[0]
     except Exception:
         old = "not installed"
-    path = os.getcwd() + '/prog/version'
+    path = path_bmc_tester+ '/prog/version'
     file = open(path, "r")
     new = file.readlines(0)[0]
     return old, new
@@ -29,7 +29,7 @@ def installing():
     TryComand('sudo mkdir /opt/bmc_tester')
    
     logger.debug('copy scripts files')
-    TryComand('sudo cp -r ' + os.getcwd() + '/prog/* /opt/bmc_tester')
+    TryComand('sudo cp -r ' + os.getcwd() + '/* /opt/bmc_tester')
     TryComand('sudo chmod +x /opt/bmc_tester/scripts/*')
     
     logger.debug('create alias in bashrc for root')
@@ -119,7 +119,7 @@ if __name__ == "__main__":
             installing()
         elif options.update:
             logger.debug("check version")
-            old, new = get_version()
+            old, new = get_version(os.getcwd())
             if old =="not installed":
                  installing()
             elif float(new) > float(old):
