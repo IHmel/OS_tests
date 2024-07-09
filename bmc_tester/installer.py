@@ -27,7 +27,7 @@ def installing():
     logger.debug('create folder for script in /opt')
     subprocess.call('sudo rm -r /opt/bmc_tester', shell = True)
     TryComand('sudo mkdir /opt/bmc_tester')
-   
+
     logger.debug('copy scripts files')
     TryComand('sudo cp -r ' + os.getcwd() + '/* /opt/bmc_tester')
     TryComand('sudo chmod +x /opt/bmc_tester/scripts/*')
@@ -65,7 +65,7 @@ def installing():
             print('Everything is broken')
     except Exception:
         print('Failed to install nmap. install it yourself: https://nmap.org/')
-     
+
 
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog="BMC tester")
@@ -121,7 +121,7 @@ if __name__ == "__main__":
             logger.debug("check version")
             old, new = get_version(os.getcwd())
             if old =="not installed":
-                 installing()
+                installing()
             elif float(new) > float(old):
                 logger.debug("start updating")
                 logger.debug('delete old scripts files from /opt')
