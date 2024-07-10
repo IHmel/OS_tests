@@ -10,6 +10,30 @@ logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 pp = '/opt/vulnert' # installing programs path
 ip = os.getcwd() # installer path
 
+def check_package_manager():
+    """
+    This function checks which package manager is available on the system.
+
+    The function attempts to find the first available package manager from a list of common ones:
+    'apt-get', 'yum', 'dnf', 'pacman', and 'zypper'. It does this by running the 'which' command
+    for each package manager and checking the return code. If the return code is 0, it means the
+    package manager is available and the function returns the name of the package manager. If no
+    package manager is found, the function returns 'Unknown'.
+
+    Parameters:
+    None
+
+    Returns:
+    str: The name of the available package manager or 'Unknown' if no package manager is found.
+    """
+    package_managers = ['apt-get', 'yum', 'dnf', 'pacman', 'zypper']
+    
+    for pm in package_managers:
+        result = subprocess.run(['which', pm], stdout=subprocess.PIPE)
+        if result.returncode == 0:
+            return pm
+    return 'Unknown'
+
 def setup_logging(options):
     """
     Configure logging for the BMC tester script.
@@ -96,22 +120,63 @@ def parse_args(args=sys.argv[1:]):
 
     return parser.parse_args(args)
 
+def installing():
+    """
+    This function is responsible for installing the necessary scripts and components for the Vulners finder.
+    It first logs a debug message indicating the start of the base installation script. Then, it changes the
+    permissions of the base installation script and executes it. After that, it determines the available
+    package manager using the check_package_manager function. Depending on the package manager, it changes
+    the permissions of the corresponding installation script and executes it. If no package manager is found,
+    it logs an error message and exits the program.
+
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
+    logger.debug('start basg script for base installing')
+    subprocess.call('chmod +x ' + ip + '/bash_scripts/base_installig.sh')
+    subprocess.call('.' + ip + '/bash_scripts/base_installig.sh')
+    pm = check_package_manager()
+    if pm == 'apt-get':
+        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_apt.sh')
+        subprocess.call('.' + ip + '/bash_scripts/install_apt.sh')
+    elif pm == 'yum':
+        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_yum.sh')
+        subprocess.call('.' + ip + '/bash_scripts/install_yum.sh')
+    elif pm == 'dnf':
+        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_dnf.sh')
+        subprocess.call('.' + ip + '/bash_scripts/install_dnf.sh')
+    elif pm == 'pacman':
+        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_pacman.sh')
+        subprocess.call('.' + ip + '/bash_scripts/install_pacman.sh')
+    elif pm == 'zypper':
+        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_zypper.sh')
+        subprocess.call('.' + ip + '/bash_scripts/install_zypper.sh')
+    elif pm == 'Unknown':
+        logger.error("No package manager found. Please install one of the following: apt-get, yum, dnf, pacman, or zypper.")
+        sys.exit(1)
+    
 if __name__ == '__main__':
     
     options = parse_args()
     setup_logging(options)
     
     try:
-        logger.debug("start bmc tester")
+        print("start installation vulners finder")
         if options.install:
-            logger.debug("start installing")
-            #start installing function
+            print("start installing")
+            installing()
+            logger.debug("finish installation")
         elif options.update:
+            print("start updating")
             logger.debug("check version")
             old, new = get_version(os.getcwd())
             if old =="not installed":
-                logger.debug("start installing")
-            #start installing function
+                print("Program not installed. Start installing")
+                installing()
+                logger.debug("finish installation")
             elif float(new) > float(old):
                 logger.debug("start updating")
                 logger.debug('delete old scripts files from /opt')
