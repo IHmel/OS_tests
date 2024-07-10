@@ -9,6 +9,16 @@ import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 
 def get_version(path_bmc_tester):
+    """
+    This function retrieves the current and new versions of the BMC tester.
+
+    Parameters:
+    path_bmc_tester (str): The path to the directory where the BMC tester is installed.
+
+    Returns:
+    tuple: A tuple containing the old version (str) and the new version (str).
+    If the old version cannot be determined, "not installed" is returned.
+    """
     config = configparser.ConfigParser()
     try:
         config.read('example.ini')
@@ -71,6 +81,24 @@ def installing():
 
 
 def parse_args(args=sys.argv[1:]):
+    """
+    Parse command-line arguments for the BMC tester script.
+
+    Parameters:
+    args (list, optional): A list of command-line arguments. Defaults to sys.argv[1:].
+
+    Returns:
+    argparse.Namespace: An object containing the parsed arguments.
+
+    The function uses argparse to define and parse the command-line arguments.
+    It supports the following options:
+    -i, --install: Install scripts and components.
+    -up, --update: Remove script and components.
+    -nv, --new_version: Display the new version of the BMC tester.
+    -v, --version: Display the current version of the BMC tester.
+    -d, --debug: Enable debugging mode.
+    -s, --silent: Do not log to the console.
+    """
     parser = argparse.ArgumentParser(prog="BMC tester")
 
     parser.add_argument("-i", "--install", help="install scripts and components", action="store_true")
@@ -87,7 +115,23 @@ def parse_args(args=sys.argv[1:]):
     return parser.parse_args(args)
 
 def setup_logging(options):
-    """Configure logging."""
+    """
+    Configure logging for the BMC tester script.
+
+    This function sets up the logging configuration based on the provided options.
+    It configures the root logger to output messages at the WARNING level and the logger
+    for this script to output messages at the DEBUG or INFO level, depending on the
+    value of the 'debug' option. If the 'silent' option is not set, it also adds a
+    StreamHandler to the root logger to output messages to the console.
+
+    Parameters:
+    options (argparse.Namespace): An object containing the parsed command-line arguments.
+        - options.debug (bool): If True, enable debugging mode.
+        - options.silent (bool): If True, do not log to the console.
+
+    Returns:
+    None
+    """
     root = logging.getLogger("")
     root.setLevel(logging.WARNING)
     logger.setLevel(options.debug and logging.DEBUG or logging.INFO)
@@ -96,7 +140,7 @@ def setup_logging(options):
         ch.setFormatter(logging.Formatter(
             "%(levelname)s[%(name)s] %(message)s"))
         root.addHandler(ch)
-
+    
 def apt():
     subprocess.run("sudo apt-get update", shell = True)
     subprocess.run("sudo apt-get install nmap", shell = True)
