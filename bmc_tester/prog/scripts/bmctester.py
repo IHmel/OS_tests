@@ -24,6 +24,7 @@ def parse_args(args=sys.argv[1:]):
     base.add_argument("-r", "--run", help="start test", action="store_true")
     base.add_argument("-i", "--install", help="install scripts and components", action="store_true")
     base.add_argument("-rm", "--remove", help="remove script and components", action="store_true")
+    base.add_argument("-c", "--config", help="configure script settings", action="store_true")
     
     g = parser.add_mutually_exclusive_group()   #debuginfo
     g.add_argument("-d", "--debug", action="store_true", default=False, help="enable debugging")
@@ -74,6 +75,11 @@ if __name__ == "__main__":
                 TryComand('sudo python /opt/bmc_tester/scripts/update.py -d', True)
             else:
                 TryComand('sudo python /opt/bmc_tester/scripts/update.py -s', True)
+        elif options.config:
+            if options.debug:
+                TryComand('sudo python /opt/bmc_tester/scripts/config.py -d', True)
+            else:
+                TryComand('sudo python /opt/bmc_tester/scripts/config.py -s', True)
         elif options.run:
             logging.debug("Run with next options: ",options.username, options.password, options.target)
             if not check_ping(options.target):
