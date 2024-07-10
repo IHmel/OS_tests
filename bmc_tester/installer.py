@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import configparser
 import argparse
 import sys
 import logging
@@ -8,9 +9,11 @@ import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 
 def get_version(path_bmc_tester):
+    config = configparser.ConfigParser()
     try:
-        file = open("/opt/bmc_tester/version", "r")
-        old = file.readlines(0)[0]
+        config.read('example.ini')
+        file = open("/opt/bmc_tester/prog/data.ini", "r")
+        old = config(["Program"]["version"])
     except Exception:
         old = "not installed"
     path = path_bmc_tester+ '/prog/version'
