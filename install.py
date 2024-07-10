@@ -16,28 +16,6 @@ def TryComand(comand):
     
 
 def installing():
-    logger.debug('create folder for script in /opt')
-    subprocess.call('sudo rm -r /opt/bmc_tester', shell = True)
-    TryComand('sudo mkdir /opt/bmc_tester')
-
-    logger.debug('copy scripts files')
-    TryComand('sudo cp -r ' + os.getcwd() + '/* /opt/bmc_tester')
-    TryComand('sudo chmod +x /opt/bmc_tester/scripts/*')
-    
-    logger.debug('create alias in bashrc for root')
-    subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
-    subprocess.call("sudo echo \"alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'\" >>/root/.bashrc", shell = True)
-
-    logger.debug('create alias for user')
-    homefolder = os.path.join('/home/', os.environ['USER'])
-    bashrc = os.path.abspath('%s/.bashrc' % homefolder)
-    print('BBBBBAAAASHH=',bashrc)
-    alias = "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'"
-    with open(bashrc, 'r') as f:
-        lines = f.readlines()
-        if alias not in lines:
-            out = open(bashrc, 'a')
-            out.write(alias)
 
     logger.debug('check installing nmap')
     packet_manager = """Select a package manager. Enter:
