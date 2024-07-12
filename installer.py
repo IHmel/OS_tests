@@ -171,7 +171,8 @@ if __name__ == '__main__':
         elif options.update:
             print("start updating")
             logger.debug("check version")
-            old, new = get_version(os.getcwd())
+            old, new = get_version()
+            logger.debug('check version: %s, %s', old, new)  # for debug only
             if old =="not installed":
                 print("Program not installed. Start installing")
                 installing()
@@ -179,7 +180,7 @@ if __name__ == '__main__':
             elif float(new) > float(old):
                 logger.debug('update old scripts files from /opt')
                 subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/updater.sh', shell=True)
-                subprocess.call('.' + ip + '/bash_scripts/updater.sh', shell=True)
+                subprocess.call('sh ' + ip + '/bash_scripts/updater.sh', shell=True)
                 logger.debug("finish updating")
             logger.debug("last version installed")
 
