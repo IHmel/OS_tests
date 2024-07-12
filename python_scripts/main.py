@@ -6,6 +6,8 @@ import logging.handlers
 import os
 import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
+pp = '/opt/vulnert' # installing programs path
+
 
 def TryComand(comand, TF): #exeptions comand line for debugging
     try:
@@ -66,10 +68,7 @@ if __name__ == "__main__":
     try:
         logger.debug("start bmc tester")
         if options.remove:
-            if options.debug:
-                TryComand('sudo python /opt/bmc_tester/scripts/remove.py -d', True)
-            else:
-                TryComand('sudo python /opt/bmc_tester/scripts/remove.py -s', True)
+            subprocess.call('sh ' + pp + '/bash_scripts/deinstall.sh', shell=True)
         elif options.update:
             if options.debug:
                 TryComand('sudo python /opt/bmc_tester/scripts/update.py -d', True)
