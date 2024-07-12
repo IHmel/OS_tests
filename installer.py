@@ -9,7 +9,6 @@ import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 pp = '/opt/vulnert' # installing programs path
 ip = os.getcwd() # installer path
-
 def check_package_manager():
     """
     This function checks which package manager is available on the system.
@@ -140,19 +139,19 @@ def installing():
     subprocess.call('.' + ip + '/bash_scripts/base_installig.sh')
     pm = check_package_manager()
     if pm == 'apt-get':
-        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_apt.sh')
+        subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_apt.sh')
         subprocess.call('.' + ip + '/bash_scripts/install_apt.sh')
     elif pm == 'yum':
-        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_yum.sh')
+        subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_yum.sh')
         subprocess.call('.' + ip + '/bash_scripts/install_yum.sh')
     elif pm == 'dnf':
-        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_dnf.sh')
+        subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_dnf.sh')
         subprocess.call('.' + ip + '/bash_scripts/install_dnf.sh')
     elif pm == 'pacman':
-        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_pacman.sh')
+        subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_pacman.sh')
         subprocess.call('.' + ip + '/bash_scripts/install_pacman.sh')
     elif pm == 'zypper':
-        subprocess.call('chmod +x ' + ip + '/bash_scripts/install_zypper.sh')
+        subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_zypper.sh')
         subprocess.call('.' + ip + '/bash_scripts/install_zypper.sh')
     elif pm == 'Unknown':
         logger.error("No package manager found. Please install one of the following: apt-get, yum, dnf, pacman, or zypper.")
@@ -178,11 +177,9 @@ if __name__ == '__main__':
                 installing()
                 logger.debug("finish installation")
             elif float(new) > float(old):
-                logger.debug("start updating")
-                logger.debug('delete old scripts files from /opt')
-                TryComand('sudo rm -r /opt/bmc_tester/scripts')
-                TryComand('sudo cp ' + os.getcwd() + '/prog/* /opt/bmc_tester/scripts')
-                TryComand('sudo chmod +x /opt/bmc_tester')
+                logger.debug('update old scripts files from /opt')
+                subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/updater.sh')
+                subprocess.call('.' + ip + '/bash_scripts/updater.sh')
                 logger.debug("finish updating")
             logger.debug("last version installed")
 
