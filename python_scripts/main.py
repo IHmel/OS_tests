@@ -8,16 +8,6 @@ import subprocess
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 pp = '/opt/vulnert' # installing programs path
 
-
-def TryComand(comand, TF): #exeptions comand line for debugging
-    try:
-        subprocess.run(comand, shell = TF)
-        print(comand)
-    except subprocess.CalledProcessError as e:
-        print(comand)
-        print(e.output)
-        sys.exit(1)
-
 def parse_args(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(prog="BMC tester")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s 0.1")
@@ -69,16 +59,8 @@ if __name__ == "__main__":
         logger.debug("start bmc tester")
         if options.remove:
             subprocess.call('sh ' + pp + '/bash_scripts/deinstall.sh', shell=True)
-        elif options.update:
-            if options.debug:
-                TryComand('sudo python /opt/bmc_tester/scripts/update.py -d', True)
-            else:
-                TryComand('sudo python /opt/bmc_tester/scripts/update.py -s', True)
         elif options.config:
-            if options.debug:
-                TryComand('sudo python /opt/bmc_tester/scripts/config.py -d', True)
-            else:
-                TryComand('sudo python /opt/bmc_tester/scripts/config.py -s', True)
+            print("Configure function")
         elif options.run:
             logging.debug("Run with next options: ",options.username, options.password, options.target)
             if not check_ping(options.target):
@@ -89,7 +71,6 @@ if __name__ == "__main__":
         else:
             print(options.print_help())
 
-        
 
     except Exception as e:
         logger.exception("%s", e)

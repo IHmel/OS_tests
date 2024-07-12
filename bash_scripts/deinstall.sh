@@ -5,5 +5,5 @@ sudo sed -i "/vulnf/d"  /home/"$(whoami)"/.bashrc
 echo "Delete root alis..."
 sudo sed -i "/vulnf/d"  /root/.bashrc
 echo "Delete all sripts files"
-sudo rm -r /opt/bmc_tester
+sudo rm -r /opt/vulnert
 echo "Delete /opt/vulnet"
