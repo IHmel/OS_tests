@@ -42,7 +42,7 @@ if __name__ == "__main__":
         
         logger.debug('start deleting')
         logger.debug('delete alias in bashrc for root')
-        subprocess.call('sudo sed -i "/bmctester/d"  /root/.bashrc', shell = True)
+        subprocess.call('sudo sed -i "/vulnf/d"  /root/.bashrc', shell = True)
         logger.debug('delete alias in bashrc for user')
         homefolder = os.path.join('/home/', os.environ['USER'])
         bashrc = os.path.abspath('%s/.bashrc' % homefolder)

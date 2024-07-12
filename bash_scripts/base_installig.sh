@@ -12,18 +12,18 @@ sudo chmod +x /opt/vulnert/bash_scripts/*
 sudo chmod +x /opt/vulnert/python_scripts/*
 
 echo "creating an alias for root"
-if sudo grep "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'" /root/.bashrc; then
+if sudo bash -c "grep vulnf /root/.bashrc"; then
 echo "alias has already been created"
 else
-sudo echo "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'" >> /root/.bashrc
+sudo bash -c "echo alias vulnf=\'python /opt/vulnert/python_scripts/main.py\' >> /root/.bashrc"
 echo "alias created"
 fi
 
 echo "creating an alias for user"
-if grep "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'" /home/"$(whoami)"/.bashrc; then
+if grep vulnf /home/"$(whoami)"/.bashrc; then
 echo "alias has already been created"
 else
-sudo echo "alias bmctester='sudo python /opt/bmc_tester/scripts/bmctester.py'" >> /home/"$(whoami)"/.bashrc
+echo alias vulnf=\'python /opt/vulnert/python_scripts/main.py\' >> /home/"$(whoami)"/.bashrc
 echo "alias created"
 fi
 
