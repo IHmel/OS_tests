@@ -41,8 +41,8 @@ def setup_logging(options):
         root.addHandler(ch)
 
 def check_ping(ip):
-    response = os.popen(f"ping {ip}").read()
-    if "Received = 4" in response:
+    response = os.popen(f"ping -c 5 {ip}").read()
+    if "0% packet loss" in response:
         logging.debug(f"UP {ip} Ping Successful, Host is UP!")
         return True
     else:
