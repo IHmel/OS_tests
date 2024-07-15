@@ -157,6 +157,11 @@ def installing():
         logger.error("No package manager found. Please install one of the following: apt-get, yum, dnf, pacman, or zypper.")
         sys.exit(1)
     
+    result = subprocess.run(['which', 'nmap'], stdout=subprocess.PIPE)
+    if not result.returncode == 0:
+        print('Failed to install nmap, install it yourself or add the appropriate repository')
+        sys.exit(1)
+
 if __name__ == '__main__':
     
     options = parse_args()
