@@ -27,7 +27,7 @@ def parse_args(args=sys.argv[1:]):
     options.add_argument('-u', '--username', help="user to connect to bmc")
     options.add_argument('-p', '--password', help="password")
 
-    return parser.parse_args(args)
+    return parser, parser.parse_args(args)
 
 def setup_logging(options):
     """Configure logging."""
@@ -52,7 +52,7 @@ def check_ping(ip):
 
 if __name__ == "__main__":
 
-    options = parse_args()
+    parser, options = parse_args()
     setup_logging(options)
 
     try:
@@ -62,14 +62,17 @@ if __name__ == "__main__":
         elif options.config:
             print("Configure function")
         elif options.run:
-            logging.debug("Run with next options: ",options.username, options.password, options.target)
+            print(f"""Run with next options:
+                Target IP: {options.target};
+                Username: {options.username}; 
+                Password: {options.password}.""")
             if not check_ping(options.target):
                 logging.debug("Check your network connection with target")
             else:
                 print("start GRYAAZZZZ")
             
         else:
-            print(options.print_help())
+            parser.print_help()
 
 
     except Exception as e:

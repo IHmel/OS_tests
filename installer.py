@@ -140,19 +140,19 @@ def installing():
     pm = check_package_manager()
     if pm == 'apt-get':
         subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_apt.sh', shell=True)
-        subprocess.call('.' + ip + '/bash_scripts/install_apt.sh', shell=True)
+        subprocess.call('sh ' + ip + '/bash_scripts/install_apt.sh', shell=True)
     elif pm == 'yum':
         subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_yum.sh', shell=True)
-        subprocess.call('.' + ip + '/bash_scripts/install_yum.sh', shell=True)
+        subprocess.call('sh ' + ip + '/bash_scripts/install_yum.sh', shell=True)
     elif pm == 'dnf':
         subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_dnf.sh', shell=True)
-        subprocess.call('.' + ip + '/bash_scripts/install_dnf.sh', shell=True)
+        subprocess.call('sh ' + ip + '/bash_scripts/install_dnf.sh', shell=True)
     elif pm == 'pacman':
         subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_pacman.sh', shell=True)
-        subprocess.call('.' + ip + '/bash_scripts/install_pacman.sh', shell=True)
+        subprocess.call('sh ' + ip + '/bash_scripts/install_pacman.sh', shell=True)
     elif pm == 'zypper':
         subprocess.call('sudo chmod +x ' + ip + '/bash_scripts/install_zypper.sh', shell=True)
-        subprocess.call('.' + ip + '/bash_scripts/install_zypper.sh', shell=True)
+        subprocess.call('sh ' + ip + '/bash_scripts/install_zypper.sh', shell=True)
     elif pm == 'Unknown':
         logger.error("No package manager found. Please install one of the following: apt-get, yum, dnf, pacman, or zypper.")
         sys.exit(1)
