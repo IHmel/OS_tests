@@ -69,6 +69,7 @@ if __name__ == "__main__":
             if not check_ping(options.target):
                 logging.debug("Check your network connection with target")
             else:
+                subprocess.call('nmap -sV --script vuln ' + options.target, shell=True)
                 print("start GRYAAZZZZ")
             
         else:

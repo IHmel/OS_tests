@@ -161,6 +161,9 @@ def installing():
     if not result.returncode == 0:
         print('Failed to install nmap, install it yourself or add the appropriate repository')
         sys.exit(1)
+    subprocess.call('cd /usr/share/nmap/scripts/', shell=True)
+    subprocess.call('git clone https://github.com/vulnersCom/nmap-vulners.git', shell=True)
+
 
 if __name__ == '__main__':
     
