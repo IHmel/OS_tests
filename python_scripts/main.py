@@ -5,6 +5,7 @@ import logging
 import logging.handlers
 import os
 import subprocess
+import datetime
 logger = logging.getLogger(os.path.splitext(os.path.basename(sys.argv[0]))[0])
 pp = '/opt/vulnert' # installing programs path
 
@@ -69,7 +70,10 @@ if __name__ == "__main__":
             if not check_ping(options.target):
                 logging.debug("Check your network connection with target")
             else:
-                subprocess.call('nmap -sV --script vuln ' + options.target, shell=True)
+                now = datetime.datetime.now()
+                ntd = pp+'/searches/'+now.strftime("%d-%m-%Y_%H:%M") #name of test directory
+                subprocess.call('mkdir ' + ntd, shell=True)
+                subprocess.call('nmap -sV --script vuln '+ options.target + ' | tee '+ntd+'/nmap.log', shell=True)
                 print("start GRYAAZZZZ")
             
         else:
